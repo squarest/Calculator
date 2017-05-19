@@ -8,4 +8,22 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <style name="button_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textSize">@dimen/button_text_size</item>
+        <item name="android:onClick">onClick</item>
+    </style>
+
+    <style name="text_view_style">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">3</item>
+        <item name="android:gravity">right|center_vertical</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:maxLength">30</item>
+        <item name="android:textSize">40sp</item>
+    </style>
+
 </resources>

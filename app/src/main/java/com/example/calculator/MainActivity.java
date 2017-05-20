@@ -6,6 +6,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import java.util.Objects;
 import java.util.Stack;
 
 public class MainActivity extends AppCompatActivity {
@@ -18,11 +19,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         expTextView = (TextView) findViewById(R.id.input_text_view);
+        expTextView.setText("0");
         answerTextView = (TextView) findViewById(R.id.answer_text_view);
-//        String s = "3 + 4 * 2 / (1 - 5)^2";
-//        String s2 = convertToOPN(s);
-//        Log.d("TAG", s2);
-//        Log.d("TAG", String.valueOf(calculate(s2)));
+        answerTextView.setText("=");
+//        String s = "21.0324 / 3 * (6 - (18 + 14)) /  8 ";
+//        Log.d("TAG", String.valueOf(calculate(s)));
     }
 
     private String convertToOPN(String inputString) {
@@ -52,8 +53,8 @@ public class MainActivity extends AppCompatActivity {
                 case '/':
                 case '^': {
                     for (int j = 0; j < operators.size(); j++) {
-                        if ((symbols[i] == '-' | symbols[i] == '/') & getPriority(symbols[i]) <= getPriority(operators.peek())
-                                | getPriority(symbols[i]) < getPriority(operators.peek())) {
+//                        if ((symbols[i] == '-' | symbols[i] == '/') & getPriority(symbols[i]) <= getPriority(operators.peek())
+                        if (getPriority(symbols[i]) <= getPriority(operators.peek())) {
                             outString += String.valueOf(operators.pop()) + ' ';
                         } else {
                             break;
@@ -81,42 +82,49 @@ public class MainActivity extends AppCompatActivity {
         return outString;
     }
 
-    private double calculate(String inputString) {
-        inputString = convertToOPN(inputString);
-        String[] operands = inputString.split(" ");
-        Stack<Double> stack = new Stack<>();
-        for (String operand : operands) {
-            if (isDouble(operand)) {
-                stack.push(Double.parseDouble(operand));
-            } else switch (operand) {
-                case "+": {
-                    stack.push(stack.pop() + stack.pop());
-                    break;
-                }
-                case "-": {
-                    double temp = stack.pop();
-                    stack.push(stack.pop() - temp);
-                    break;
-                }
-                case "*": {
-                    stack.push(stack.pop() * stack.pop());
-                    break;
-                }
-                case "/": {
-                    double temp = stack.pop();
-                    if (temp != 0) {
-                        stack.push(stack.pop() / temp);
+    private String calculate(String inputString) {
+        try {
+            inputString = convertToOPN(inputString);
+//        Log.d("TAG",inputString);
+            String[] operands = inputString.split(" ");
+            Stack<Double> stack = new Stack<>();
+            for (String operand : operands) {
+                if (isDouble(operand)) {
+                    stack.push(Double.parseDouble(operand));
+                } else switch (operand) {
+                    case "+": {
+                        stack.push(stack.pop() + stack.pop());
+                        break;
                     }
-                    break;
-                }
-                case "^": {
-                    double temp = stack.pop();
-                    stack.push(Math.pow(stack.pop(), temp));
-                    break;
+                    case "-": {
+                        double temp = stack.pop();
+                        stack.push(stack.pop() - temp);
+                        break;
+                    }
+                    case "*": {
+                        stack.push(stack.pop() * stack.pop());
+                        break;
+                    }
+                    case "/": {
+                        double temp = stack.pop();
+                        if (temp != 0) {
+                            stack.push(stack.pop() / temp);
+                        } else return "ОШИБКА";
+                        break;
+                    }
+                    case "^": {
+                        double temp = stack.pop();
+                        stack.push(Math.pow(stack.pop(), temp));
+                        break;
+                    }
                 }
             }
+            return String.valueOf(stack.pop());
         }
-        return stack.pop();
+        catch (Exception e)
+        {
+            return "ОШИБКА";
+        }
     }
 
     private boolean isDouble(String str) {
@@ -148,30 +156,36 @@ public class MainActivity extends AppCompatActivity {
 
     public void onClick(View v) {
         Button b = (Button) v;
-        switch (b.getText().toString()) {
+        String butText = b.getText().toString();
+        expression = expTextView.getText().toString();
+        switch (butText) {
             case "DEL": {
-                expression = expTextView.getText().toString();
-                expTextView.setText(expression.substring(0, expression.length() - 1));
+                if (expression.length()>1) {
+                    expTextView.setText(expression.substring(0, expression.length() - 1));
+                } else expTextView.setText("0");
                 break;
             }
             case "C": {
-                expTextView.setText("");
+                expTextView.setText("0");
+                answerTextView.setText("=");
                 break;
             }
             case "=": {
-                expression = expTextView.getText().toString();
                 if (!expression.isEmpty()) {
                     answerTextView.setText("= " + calculate(expression));
+                    expTextView.setText(null);
                 }
                 break;
             }
             default: {
-                if (Character.isDigit(b.getText().toString().charAt(0))) {
-                    expTextView.setText(expTextView.getText().toString() + b.getText().toString());
-                } else {
-                    expTextView.setText(expTextView.getText().toString() + " " + b.getText().toString() + " ");
+                if ((Objects.equals(expression,"0")|expression==null) &
+                        (Character.isDigit(butText.charAt(0)) | Objects.equals(butText,"("))) {
+                    expTextView.setText(butText);
+                } else if(Objects.equals(expression,"0") &
+                        Objects.equals(butText,".") | !Objects.equals(expression,"0"))
+                {
+                    expTextView.setText(expression+butText);
                 }
-
                 break;
             }
         }

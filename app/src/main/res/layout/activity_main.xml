@@ -9,11 +9,13 @@
     <TextView
         android:id="@+id/input_text_view"
         style="@style/text_view_style"
+        android:singleLine="true"
         tools:text="3 + 4 * 2 / (1 - 5)^2" />
 
     <TextView
         android:id="@+id/answer_text_view"
         style="@style/text_view_style"
+        android:singleLine="true"
         tools:text="= 15" />
 
     <LinearLayout

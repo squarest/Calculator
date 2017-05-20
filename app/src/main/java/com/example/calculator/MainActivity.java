@@ -22,8 +22,6 @@ public class MainActivity extends AppCompatActivity {
         expTextView.setText("0");
         answerTextView = (TextView) findViewById(R.id.answer_text_view);
         answerTextView.setText("=");
-//        String s = "21.0324 / 3 * (6 - (18 + 14)) /  8 ";
-//        Log.d("TAG", String.valueOf(calculate(s)));
     }
 
     private String convertToOPN(String inputString) {
@@ -37,7 +35,19 @@ public class MainActivity extends AppCompatActivity {
                     if (Character.isDigit(symbols[j]) | symbols[j] == '.') {
                         outString += symbols[j];
                         i++;
-                    } else {
+                    }else if(symbols[j]=='(')
+                    {
+                        for (int a = 0; a < operators.size(); a++) {
+                            if (getPriority(symbols[a]) <= getPriority(operators.peek())) {
+                                outString += String.valueOf(operators.pop()) + ' ';
+                            } else {
+                                break;
+                            }
+                        }
+                        operators.push('*');
+                        break;
+                    }
+                    else {
                         break;
                     }
                 }
@@ -53,7 +63,6 @@ public class MainActivity extends AppCompatActivity {
                 case '/':
                 case '^': {
                     for (int j = 0; j < operators.size(); j++) {
-//                        if ((symbols[i] == '-' | symbols[i] == '/') & getPriority(symbols[i]) <= getPriority(operators.peek())
                         if (getPriority(symbols[i]) <= getPriority(operators.peek())) {
                             outString += String.valueOf(operators.pop()) + ' ';
                         } else {
@@ -85,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
     private String calculate(String inputString) {
         try {
             inputString = convertToOPN(inputString);
-//        Log.d("TAG",inputString);
             String[] operands = inputString.split(" ");
             Stack<Double> stack = new Stack<>();
             for (String operand : operands) {
@@ -173,7 +181,6 @@ public class MainActivity extends AppCompatActivity {
             case "=": {
                 if (!expression.isEmpty()) {
                     answerTextView.setText("= " + calculate(expression));
-                    expTextView.setText(null);
                 }
                 break;
             }

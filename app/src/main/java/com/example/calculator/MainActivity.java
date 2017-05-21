@@ -28,14 +28,14 @@ public class MainActivity extends AppCompatActivity {
         Stack<Character> operators = new Stack<>();
         String outString = "";
         char[] symbols = inputString.toCharArray();
-        for (int i = 0; i < symbols.length; i++) {
-            if (Character.isDigit(symbols[i])) {
+        for (int i = 0; i < symbols.length; i++) {  //перебираем посимвольно строку
+            if (Character.isDigit(symbols[i])) {    //если цифра
                 outString += symbols[i];
-                for (int j = i + 1; j < symbols.length; j++) {
+                for (int j = i + 1; j < symbols.length; j++) {  //то проверям следующий символ пока не соберем число полностью
                     if (Character.isDigit(symbols[j]) | symbols[j] == '.') {
                         outString += symbols[j];
                         i++;
-                    }else if(symbols[j]=='(')
+                    } else if (symbols[j] == '(')//если цифра написана перед скобкой
                     {
                         for (int a = 0; a < operators.size(); a++) {
                             if (getPriority(symbols[a]) <= getPriority(operators.peek())) {
@@ -44,10 +44,9 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             }
                         }
-                        operators.push('*');
+                        operators.push('*');//то добавляем оператор умножения в стек
                         break;
-                    }
-                    else {
+                    } else {
                         break;
                     }
                 }
@@ -57,26 +56,27 @@ public class MainActivity extends AppCompatActivity {
                     operators.push(symbols[i]);
                     break;
                 }
+                //если оператор
                 case '+':
                 case '-':
                 case '*':
                 case '/':
                 case '^': {
                     for (int j = 0; j < operators.size(); j++) {
-                        if (getPriority(symbols[i]) <= getPriority(operators.peek())) {
+                        if (getPriority(symbols[i]) <= getPriority(operators.peek())) {//то проверяем приоритет
                             outString += String.valueOf(operators.pop()) + ' ';
                         } else {
                             break;
                         }
                     }
-                    operators.push(symbols[i]);
+                    operators.push(symbols[i]);//добавляем оператор в стек
                     break;
                 }
-                case ')': {
+                case ')': {// если закрывающаяся скобка
                     while (!operators.empty()) {
                         char operator = operators.pop();
                         if (operator != '(') {
-                            outString += String.valueOf(operator) + ' ';
+                            outString += String.valueOf(operator) + ' ';//то выводим все операторы между скобками из стека
                         } else {
                             break;
                         }
@@ -86,17 +86,17 @@ public class MainActivity extends AppCompatActivity {
             }
         }
         while (!operators.empty()) {
-            outString += String.valueOf(operators.pop()) + ' ';
+            outString += String.valueOf(operators.pop()) + ' '; // выводим оставшиеся операторы
         }
         return outString;
     }
 
     private String calculate(String inputString) {
         try {
-            inputString = convertToOPN(inputString);
+            inputString = convertToOPN(inputString);//преобразуем строку в обратную польскую нотацию
             String[] operands = inputString.split(" ");
             Stack<Double> stack = new Stack<>();
-            for (String operand : operands) {
+            for (String operand : operands) {//посимвольно перебираем строку и выполняем операции
                 if (isDouble(operand)) {
                     stack.push(Double.parseDouble(operand));
                 } else switch (operand) {
@@ -128,9 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
             return String.valueOf(stack.pop());
-        }
-        catch (Exception e)
-        {
+        } catch (Exception e) {
             return "ОШИБКА";
         }
     }
@@ -168,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
         expression = expTextView.getText().toString();
         switch (butText) {
             case "DEL": {
-                if (expression.length()>1) {
+                if (expression.length() > 1) {
                     expTextView.setText(expression.substring(0, expression.length() - 1));
                 } else expTextView.setText("0");
                 break;
@@ -185,13 +183,14 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
             default: {
-                if ((Objects.equals(expression,"0")|expression==null) &
-                        (Character.isDigit(butText.charAt(0)) | Objects.equals(butText,"("))) {
-                    expTextView.setText(butText);
-                } else if(Objects.equals(expression,"0") &
-                        Objects.equals(butText,".") | !Objects.equals(expression,"0"))
-                {
-                    expTextView.setText(expression+butText);
+                if (expression.length() < 15) {
+                    if ((Objects.equals(expression, "0") | expression == null) &
+                            (Character.isDigit(butText.charAt(0)) | Objects.equals(butText, "("))) {
+                        expTextView.setText(butText);
+                    } else if (Objects.equals(expression, "0") &
+                            Objects.equals(butText, ".") | !Objects.equals(expression, "0")) {
+                        expTextView.setText(expression + butText);
+                    }
                 }
                 break;
             }
